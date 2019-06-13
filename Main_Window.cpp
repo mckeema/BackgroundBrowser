@@ -4,7 +4,9 @@
 #include <QtNetwork>
 #include "Main_Window.h"
 
-const int MAX_IMAGES_PER_DIM = 4;
+const int MAX_IMAGES = 24;
+const int MAX_ROWS = 6;
+const int MAX_COLS = 4;
 
 struct less_than_image {
     inline bool operator()(const std::pair<QPixmap *, int> &a, const std::pair<QPixmap *, int> &b) {
@@ -12,9 +14,61 @@ struct less_than_image {
     }
 };
 
+int convert(int value) {
+    switch (value) {
+        case 1:
+            return 6;
+            break;
+        case 2:
+            return 12;
+            break;
+        case 3:
+            return 24;
+            break;
+        case 6:
+            return 1;
+            break;
+        case 12:
+            return 2;
+            break;
+        case 24:
+            return 3;
+            break;
+    }
+}
+
+int to_rows(int value) {
+    switch (value) {
+        case 1:
+            return 3;
+            break;
+        case 2:
+            return 4;
+            break;
+        case 3:
+            return 6;
+            break;
+    }
+}
+
+int to_cols(int value) {
+    switch (value) {
+        case 1:
+            return 2;
+            break;
+        case 2:
+            return 3;
+            break;
+        case 3:
+            return 4;
+            break;
+    }
+}
+
 Main_Window::Main_Window(QWidget *parent)
     : QWidget(parent) {
     sorted = false;
+    num_images = 6;
 
     button_ = new QPushButton(tr("test"));
     nam = new QNetworkAccessManager(this);
@@ -23,23 +77,30 @@ Main_Window::Main_Window(QWidget *parent)
 
     image_grid = new QGridLayout();
 
-    for (int i = 0; i < MAX_IMAGES_PER_DIM*MAX_IMAGES_PER_DIM; ++i) {
+    for (int i = 0; i < MAX_IMAGES; ++i) {
         QLabel *image = new QLabel();
         images.push_back(image);
         files.push_back(new QPixmap("placeholder.jpg"));
         dl_order.push_back(i);
     }
 
-    image_grid->addWidget(images[0], 0, 0);
-    images[0]->setScaledContents(false);
-    images[0]->setMinimumSize(1,1);
-    QPixmap p(*files[0]);
-    images[0]->setPixmap(p.scaled(images[0]->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    int count = 0;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            image_grid->addWidget(images[count], i, j);
+            images[count]->setScaledContents(false);
+            images[count]->setMinimumSize(1,1);
+            QPixmap p(*files[count]);
+            images[count]->setPixmap(p.scaled(images[count]->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+            ++count;
+        }
+    }
 
     num_images_slider->setTickPosition(QSlider::TicksBothSides);
     num_images_slider->setTickInterval(1);
     num_images_slider->setSingleStep(1);
-    num_images_slider->setRange(1, MAX_IMAGES_PER_DIM);
+    num_images_slider->setRange(1, 3);
 
     num_images_label->setText(QString::number(num_images_slider->value()));
 
@@ -52,7 +113,7 @@ Main_Window::Main_Window(QWidget *parent)
     main_layout->addLayout(left_layout, 0);
     main_layout->addLayout(image_grid, 1);
     setLayout(main_layout);
-    setWindowTitle(tr("HONK"));
+    setWindowTitle(tr("BackgroundBrowser"));
 
     connect(button_, SIGNAL(released()), this, SLOT(on_button_released()));
     connect(num_images_slider, SIGNAL(valueChanged(int)), this, SLOT(set_slider_text(int)));
@@ -108,10 +169,6 @@ void Main_Window::parse_json() {
 
     int i = 0;
     for (const QJsonValue &v : wh_data) {
-        if (i >= MAX_IMAGES_PER_DIM*MAX_IMAGES_PER_DIM) {
-            break;
-        }
-
         QNetworkAccessManager *nam_img = new QNetworkAccessManager();
         nam_img->get(QNetworkRequest(v.toObject().value("path").toString()));
         connect(nam_img, &QNetworkAccessManager::finished, this, [this,i](){dl_order.push_back(i);});
@@ -133,13 +190,13 @@ void Main_Window::save_image(QNetworkReply *reply) {
 void Main_Window::sort_and_refresh() {
     static int i = 0;
     ++i;
-    if (i < MAX_IMAGES_PER_DIM*MAX_IMAGES_PER_DIM) {
+    if (i < MAX_IMAGES) {
         return;
     }
 
     i = 0;
 
-    set_num_images(sqrt(image_grid->count()));
+    set_num_images(convert(image_grid->count()));
 }
 
 void Main_Window::resize_func(QLabel *label, int index) {
@@ -162,7 +219,7 @@ void Main_Window::resizeEvent(QResizeEvent *e) {
 }
 
 void Main_Window::set_slider_text(int value) {
-    num_images_label->setText(QString::number(value));
+    num_images_label->setText(QString::number(convert(value)));
 }
 
 void Main_Window::set_num_images(int value) {
@@ -182,13 +239,12 @@ void Main_Window::set_num_images(int value) {
         sorted = true;
     }
 
-    // count is width x height, so sqrt gets width/height
-    const int &dim = sqrt(image_grid->count());
+    const int &old_num = image_grid->count();
 
     // if num_images is decreasing, remove all widgets from grid
-    if (value < dim) {
-        for (int i = 0; i < dim; ++i) {
-            for (int j = 0; j < dim; ++j) {
+    if (convert(value) < old_num) {
+        for (int i = 0; i < to_rows(convert(old_num)); ++i) {
+            for (int j = 0; j < to_cols(convert(old_num)); ++j) {
                 image_grid->itemAtPosition(i, j)->widget()->setVisible(false);
                 image_grid->removeWidget(image_grid->itemAtPosition(i, j)->widget());
             }
@@ -196,20 +252,23 @@ void Main_Window::set_num_images(int value) {
     }
 
     // sets all images to be same size
-    for (int i = 0; i < MAX_IMAGES_PER_DIM; ++i) {
+    for (int i = 0; i < MAX_ROWS; ++i) {
         image_grid->setRowStretch(i, 0);
+    }
+    for (int i = 0; i < MAX_COLS; ++i) {
         image_grid->setColumnStretch(i, 0);
     }
-
-    for (int i = 0; i < value; ++i) {
+    for (int i = 0; i < to_rows(value); ++i) {
         image_grid->setRowStretch(i, 1);
+    }
+    for (int i = 0; i < to_cols(value); ++i) {
         image_grid->setColumnStretch(i, 1);
     }
 
     // add images to grid
     int count = 0;
-    for (int i = 0; i < value; ++i) {
-        for (int j = 0; j < value; ++j) {
+    for (int i = 0; i < to_rows(value); ++i) {
+        for (int j = 0; j < to_cols(value); ++j) {
             image_grid->addWidget(images[count], i, j);
             images[count]->setScaledContents(false);
             images[count]->setMinimumSize(1,1);

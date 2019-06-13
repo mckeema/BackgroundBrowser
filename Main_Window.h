@@ -42,6 +42,7 @@ class Main_Window : public QWidget {
         QHBoxLayout *main_layout;
         QGridLayout *image_grid;
         bool sorted;
+        int num_images;
 };
 
 #endif
