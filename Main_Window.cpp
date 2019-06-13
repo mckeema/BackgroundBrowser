@@ -26,7 +26,7 @@ Main_Window::Main_Window(QWidget *parent)
     for (int i = 0; i < MAX_IMAGES_PER_DIM*MAX_IMAGES_PER_DIM; ++i) {
         QLabel *image = new QLabel();
         images.push_back(image);
-        files.push_back(new QPixmap("wheat.jpg"));
+        files.push_back(new QPixmap("placeholder.jpg"));
         dl_order.push_back(i);
     }
 
