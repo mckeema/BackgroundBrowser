@@ -29,13 +29,13 @@ Image_Label::Image_Label(QImage *img, QWidget *parent)
 void Image_Label::set_img(QString filename) {
     orig_pixmap = QPixmap(filename);
 
-    setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    //setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void Image_Label::set_img(QImage img) {
     orig_pixmap.convertFromImage(img);
 
-    setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    //setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void Image_Label::resize() {

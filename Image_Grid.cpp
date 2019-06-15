@@ -5,6 +5,7 @@
 #include <QString>
 
 #include <algorithm>
+#include <cmath>
 
 #include "Image_Label.h"
 
@@ -22,7 +23,7 @@ Image_Grid::Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_i
     cols = col_list.front();
     size_list = size_list_in;
     page = 1;
-    last_page = size_list.back()/row_list.front()*col_list.front();
+    last_page = size_list.back()/(row_list.front()*col_list.front());
     sorted = false;
 
     for (int i = 0; i < size_list.back(); ++i) {
@@ -54,8 +55,18 @@ int Image_Grid::get_size() const {
     return rows*cols;
 }
 
+int Image_Grid::get_size_index(int size_in) {
+    std::vector<int>::iterator it = std::find(size_list.begin(), size_list.end(), size_in);
+
+    return std::distance(size_list.begin(), it)+1;
+}
+
 int Image_Grid::get_page() const {
     return page;
+}
+
+bool Image_Grid::on_last_page() const {
+    return page == last_page;
 }
 
 void Image_Grid::set_img(int index, QString filename) {
@@ -68,6 +79,10 @@ void Image_Grid::set_img(int index, QImage img) {
 
 void Image_Grid::set_page(int page_in) {
     page = page_in;
+}
+
+void Image_Grid::set_to_last_page() {
+    page = last_page;
 }
 
 void Image_Grid::set_pos(int index, int pos_in) {
@@ -84,15 +99,13 @@ void Image_Grid::resize_imgs() {
 void Image_Grid::update(int value) {
     if (!sorted) sort();
 
-    const int &old_num = rows*cols;
+    const int old_num = rows*cols;
 
-    if (size_list[value-1] < old_num) {
-        for (int i = 0; i < rows; ++i) {
-            for (int j = 0; j < cols; ++j) {
-                QWidget *img = grid->itemAtPosition(i, j)->widget();
-                img->setVisible(false);
-                grid->removeWidget(img);
-            }
+    if (grid->count() != 0) for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            QWidget *img = grid->itemAtPosition(i, j)->widget();
+            img->setVisible(false);
+            grid->removeWidget(img);
         }
     }
 
@@ -112,7 +125,16 @@ void Image_Grid::update(int value) {
         grid->setColumnStretch(i, 1);
     }
 
-    int count = 0;
+    const int old_page = last_page;
+    last_page = size_list.back()/(rows*cols);
+
+    if (old_page > last_page) {
+        page = ceil(page / (double(old_page)/last_page));
+    } else if (old_page < last_page) {
+        page = page * (last_page/old_page) - (last_page/old_page-1);
+    }
+
+    int count = (page-1)*rows*cols;
     for (int i = 0; i < rows; ++i) {
         for (int j = 0; j < cols; ++j) {
             grid->addWidget(imgs[count], i, j);

@@ -6,26 +6,32 @@
 #include "Grid_Slider.h"
 #include "Image_Grid.h"
 #include "Image_Label.h"
+#include "Page_Controller.h"
 
 Main_Window::Main_Window(QWidget *parent)
     : QWidget(parent) {
     row_list = {3, 4, 6};
     col_list = {2, 3, 4};
     size_list = {6, 12, 24};
+    wh_page = 1;
 
-    button_ = new QPushButton(tr("Next"), this);
+    button_ = new QPushButton(tr("Search"), this);
     grid = new Image_Grid(row_list, col_list, size_list, QString("placeholder.jpg"), this);
     slider = new Grid_Slider(size_list, this);
+    controller = new Page_Controller(this);
 
     QVBoxLayout *left_layout = new QVBoxLayout();
     left_layout->addWidget(button_, 0);
     left_layout->addWidget(slider, 1);
 
     main_layout = new QGridLayout(this);
-    main_layout->addLayout(left_layout, 0, 0);
+    main_layout->addLayout(left_layout, 0, 0, 2, 1);
     main_layout->addWidget(grid, 0, 1);
+    main_layout->addWidget(controller, 1, 1);
     main_layout->setColumnStretch(0, 0);
     main_layout->setColumnStretch(1, 1);
+    main_layout->setRowStretch(0, 1);
+    main_layout->setRowStretch(1, 0);
     setLayout(main_layout);
     setWindowTitle(tr("BackgroundBrowser"));
 
@@ -33,6 +39,8 @@ Main_Window::Main_Window(QWidget *parent)
     connect(slider, SIGNAL(valueChanged(int)), grid, SLOT(update(int)));
     connect(grid, &Image_Grid::done_updating, this, [this](){resize(size().width()+1, size().height()+1);
                                                              resize(size().width()-1, size().height()-1);});
+    connect(controller, SIGNAL(prev_button_released()), this, SLOT(prev_button_released()));
+    connect(controller, SIGNAL(next_button_released()), this, SLOT(next_button_released()));
 }
 
 Main_Window::~Main_Window() {
@@ -46,7 +54,7 @@ void Main_Window::on_button_released() {
     QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
     QNetworkRequest request;
-    request.setUrl(QUrl("https://wallhaven.cc/api/v1/search?sorting=toplist"));
+    request.setUrl(QUrl(QString("https://wallhaven.cc/api/v1/search?sorting=toplist%3Fpage\%3D%1&page=%1").arg(wh_page)));
     request.setRawHeader("User-Agent", "BackgroundBrowser");
     
     nam->get(request);
@@ -83,6 +91,7 @@ void Main_Window::parse_json(QNetworkReply *reply) {
 
         connect(reply, &QNetworkReply::finished, this, [this,i,reply](){grid->set_pos(i, i); set_imgs(i, reply);});
         connect(nam_img, &QNetworkAccessManager::finished, this, [nam_img](){nam_img->deleteLater();});
+        connect(reply, SIGNAL(finished()), this, SLOT(refresh()));
 
         ++i;
     }
@@ -94,13 +103,39 @@ void Main_Window::refresh() {
     if (i < size_list.back()) return;
     i = 0;
 
-    grid->update(grid->get_size());
+    grid->update(grid->get_size_index(grid->get_size()));
 }
 
 void Main_Window::set_imgs(int index, QNetworkReply *reply) {
     QImageReader img_reader(reply);
     QImage img = img_reader.read();
     grid->set_img(index, img);
+}
+
+void Main_Window::prev_button_released() {
+    if (wh_page > 1 && grid->get_page() == 1) {
+        grid->set_to_last_page();
+        --wh_page;
+
+        on_button_released();
+    } else if (grid->get_page() != 1) {
+        grid->set_page(grid->get_page()-1);
+
+        grid->update(grid->get_size_index(grid->get_size()));
+    }
+}
+
+void Main_Window::next_button_released() {
+    if (grid->on_last_page()) {
+        grid->set_page(1);
+        ++wh_page;
+
+        on_button_released();
+    } else {
+        grid->set_page(grid->get_page()+1);
+
+        grid->update(grid->get_size_index(grid->get_size()));
+    }   
 }
 
 void Main_Window::resizeEvent(QResizeEvent *e) {
