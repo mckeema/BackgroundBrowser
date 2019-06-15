@@ -4,7 +4,9 @@
 #include <QImage>
 #include <QString>
 #include <QWidget>
+
 #include <vector>
+
 #include "Image_Label.h"
 
 class QGridLayout;

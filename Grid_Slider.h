@@ -2,6 +2,7 @@
 #define GRID_SLIDER_H
 
 #include <QWidget>
+
 #include <vector>
 
 class QHBoxLayout;

@@ -1,9 +1,11 @@
-#include <QtWidgets>
-#include <QtNetwork>
 #include "Main_Window.h"
+
+#include <QtNetwork>
+#include <QtWidgets>
+
+#include "Grid_Slider.h"
 #include "Image_Grid.h"
 #include "Image_Label.h"
-#include "Grid_Slider.h"
 
 Main_Window::Main_Window(QWidget *parent)
     : QWidget(parent) {

@@ -1,11 +1,12 @@
-#include <algorithm>
+#include "Image_Grid.h"
+
 #include <QGridLayout>
 #include <QImage>
 #include <QString>
-#include "Image_Grid.h"
-#include "Image_Label.h"
 
-#include <QDebug>
+#include <algorithm>
+
+#include "Image_Label.h"
 
 struct less_than_image {
     inline bool operator()(const Image_Label *a, const Image_Label *b) {

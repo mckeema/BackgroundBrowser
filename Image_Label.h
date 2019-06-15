@@ -2,9 +2,9 @@
 #define IMAGE_LABEL_H
 
 #include <QImage>
+#include <QLabel>
 #include <QPixmap>
 #include <QString>
-#include <QLabel>
 
 class QLabel;
 class QWidget;

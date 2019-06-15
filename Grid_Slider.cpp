@@ -1,7 +1,8 @@
+#include "Grid_Slider.h"
+
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QSlider>
-#include "Grid_Slider.h"
 
 Grid_Slider::Grid_Slider(std::vector<int> values_in, QWidget *parent)
     : QWidget(parent) {

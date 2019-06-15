@@ -1,7 +1,6 @@
-#include <QLabel>
 #include "Image_Label.h"
 
-#include <QDebug>
+#include <QLabel>
 
 Image_Label::Image_Label(QString filename, QWidget *parent)
     : QLabel(parent) {
