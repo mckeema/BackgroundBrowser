@@ -4,15 +4,13 @@
 #include <QWidget>
 #include <vector>
 
-class QPushButton;
-class QNetworkAccessManager;
 class QNetworkReply;
-class QLabel;
-class QSlider;
-class QGridLayout;
+class QPushButton;
 class QHBoxLayout;
-class QString;
-class QPixmap;
+class QGridLayout;
+class QResizeEvent;
+class Image_Grid;
+class Grid_Slider;
 
 class Main_Window : public QWidget {
     Q_OBJECT
@@ -22,27 +20,19 @@ class Main_Window : public QWidget {
         ~Main_Window();
     private slots:
         void on_button_released();
-        void parse_json();
-        void resize_func(QLabel *label, int index);
-        void save_image(QNetworkReply *reply);
-        void set_slider_text(int value);
-        void set_num_images(int value);
-        void sort_and_refresh();
+        void parse_json(QNetworkReply *reply);
+        void refresh();
+        void set_imgs(int index, QNetworkReply *reply);
     protected:
         void resizeEvent(QResizeEvent *e);
     private:
         QPushButton *button_;
-        QNetworkAccessManager *nam;
-        QNetworkReply *reply;
-        std::vector<QLabel *> images;
-        std::vector<QPixmap *> files;
-        std::vector<int> dl_order;
-        QSlider *num_images_slider;
-        QLabel *num_images_label;
-        QHBoxLayout *main_layout;
-        QGridLayout *image_grid;
-        bool sorted;
-        int num_images;
+        QGridLayout *main_layout;
+        Image_Grid *grid;
+        Grid_Slider *slider;
+        std::vector<int> row_list;
+        std::vector<int> col_list;
+        std::vector<int> size_list;
 };
 
 #endif
