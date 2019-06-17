@@ -15,7 +15,6 @@ Main_Window::Main_Window(QWidget *parent)
     col_list = {2, 3, 4};
     size_list = {6, 12, 24};
 
-    //button_ = new QPushButton(tr("Search"), this);
     grid = new Image_Grid(row_list, col_list, size_list, QString("placeholder.jpg"), this);
     slider = new Grid_Slider(size_list, this);
     controller = new Page_Controller(this);
@@ -29,12 +28,6 @@ Main_Window::Main_Window(QWidget *parent)
 
     QMenu *edit_menu = menubar->addMenu(tr("Edit"));
     QAction *settings_button = edit_menu->addAction(tr("Settings"));
-
-    //QVBoxLayout *left_layout = new QVBoxLayout();
-    //left_layout->addWidget(button_, 0);
-    //left_layout->addWidget(slider, 1);
-    //left_layout->addWidget(controls, 0);
-    //left_layout->setStretch(0, 0);
 
     main_layout = new QGridLayout(this);
     main_layout->setMenuBar(menubar);
@@ -61,18 +54,12 @@ Main_Window::Main_Window(QWidget *parent)
     connect(save_button, SIGNAL(released()), grid, SLOT(save_images()));
 }
 
-Main_Window::~Main_Window() {
-    //delete button_;
-    //delete nam;
-    //delete reply;
-    //delete image;
-}
+Main_Window::~Main_Window() {}
 
 void Main_Window::on_button_released(QUrl url) {
     QNetworkAccessManager *nam = new QNetworkAccessManager(this);
 
     QNetworkRequest request;
-    //request.setUrl(QUrl(QString("https://wallhaven.cc/api/v1/search?sorting=toplist%3Fpage\%3D%1&page=%1").arg(wh_page)));
     request.setUrl(url);
     request.setRawHeader("User-Agent", "BackgroundBrowser");
     

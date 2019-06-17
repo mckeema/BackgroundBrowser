@@ -28,7 +28,7 @@ Grid_Slider::Grid_Slider(std::vector<int> values_in, QWidget *parent)
     connect(slider, SIGNAL(valueChanged(int)), this, SLOT(set_value(int)));
 }
 
-Grid_Slider::~Grid_Slider() {};
+Grid_Slider::~Grid_Slider() {}
 
 void Grid_Slider::set_value(int value_in) {
     value = values[value_in-1];

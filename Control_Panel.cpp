@@ -182,7 +182,7 @@ Control_Panel::Control_Panel(QWidget *parent)
     setLayout(layout);
 }
 
-Control_Panel::~Control_Panel() {};
+Control_Panel::~Control_Panel() {}
 
 int Control_Panel::get_page() const {
     return wh_page;

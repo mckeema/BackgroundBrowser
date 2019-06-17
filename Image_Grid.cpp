@@ -41,7 +41,7 @@ Image_Grid::Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_i
     setLayout(grid);
 }
 
-Image_Grid::~Image_Grid() {};
+Image_Grid::~Image_Grid() {}
 
 int Image_Grid::get_rows() const {
     return rows;

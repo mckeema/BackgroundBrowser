@@ -33,7 +33,6 @@ class Main_Window : public QWidget {
     protected:
         void resizeEvent(QResizeEvent *e);
     private:
-        //QPushButton *button_;
         QMenuBar *menubar;
         QPushButton *save_button;
         QGridLayout *main_layout;
@@ -44,7 +43,6 @@ class Main_Window : public QWidget {
         std::vector<int> row_list;
         std::vector<int> col_list;
         std::vector<int> size_list;
-        //int wh_page;
 };
 
 #endif
