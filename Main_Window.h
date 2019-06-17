@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <vector>
 
+class QMenuBar;
 class QNetworkReply;
 class QPushButton;
 class QHBoxLayout;
@@ -26,13 +27,15 @@ class Main_Window : public QWidget {
         void on_button_released(QUrl url);
         void parse_json(QNetworkReply *reply);
         void refresh();
-        void set_imgs(int index, QNetworkReply *reply);
+        void set_imgs(int index, QNetworkReply *reply, QString id);
         void prev_button_released();
         void next_button_released();
     protected:
         void resizeEvent(QResizeEvent *e);
     private:
         //QPushButton *button_;
+        QMenuBar *menubar;
+        QPushButton *save_button;
         QGridLayout *main_layout;
         Control_Panel *controls;
         Image_Grid *grid;

@@ -20,21 +20,33 @@ Main_Window::Main_Window(QWidget *parent)
     slider = new Grid_Slider(size_list, this);
     controller = new Page_Controller(this);
     controls = new Control_Panel(this);
+    save_button = new QPushButton(tr("Save Selected"), this);
+    menubar = new QMenuBar(this);
 
-    QVBoxLayout *left_layout = new QVBoxLayout();
+    QMenu *file_menu = menubar->addMenu(tr("File"));
+    QAction *exit_button = file_menu->addAction(tr("Exit"));
+    connect(exit_button, &QAction::triggered, this, &QWidget::close);
+
+    QMenu *edit_menu = menubar->addMenu(tr("Edit"));
+    QAction *settings_button = edit_menu->addAction(tr("Settings"));
+
+    //QVBoxLayout *left_layout = new QVBoxLayout();
     //left_layout->addWidget(button_, 0);
     //left_layout->addWidget(slider, 1);
-    left_layout->addWidget(controls, 0);
-    left_layout->setStretch(0, 0);
+    //left_layout->addWidget(controls, 0);
+    //left_layout->setStretch(0, 0);
 
     main_layout = new QGridLayout(this);
-    main_layout->addLayout(left_layout, 0, 0, 2, 1);
-    main_layout->addWidget(grid, 0, 1, 1, 2);
+    main_layout->setMenuBar(menubar);
+    main_layout->addWidget(controls, 0, 0, 2, 1);
+    main_layout->addWidget(grid, 0, 1, 1, 3);
     main_layout->addWidget(controller, 1, 2);
     main_layout->addWidget(slider, 1, 1);
+    main_layout->addWidget(save_button, 1, 3);
     main_layout->setColumnStretch(0, 0);
     main_layout->setColumnStretch(1, 1);
     main_layout->setColumnStretch(2, 2);
+    main_layout->setColumnStretch(3, 1);
     main_layout->setRowStretch(0, 1);
     main_layout->setRowStretch(1, 0);
     setLayout(main_layout);
@@ -46,6 +58,7 @@ Main_Window::Main_Window(QWidget *parent)
                                                              resize(size().width()-1, size().height()-1);});
     connect(controller, SIGNAL(prev_button_released()), this, SLOT(prev_button_released()));
     connect(controller, SIGNAL(next_button_released()), this, SLOT(next_button_released()));
+    connect(save_button, SIGNAL(released()), grid, SLOT(save_images()));
 }
 
 Main_Window::~Main_Window() {
@@ -94,8 +107,9 @@ void Main_Window::parse_json(QNetworkReply *reply) {
         QNetworkAccessManager *nam_img = new QNetworkAccessManager(this);
 
         QNetworkReply *reply = nam_img->get(QNetworkRequest(v.toObject().value("path").toString()));
+        QString *id = new QString(v.toObject().value("id").toString());
 
-        connect(reply, &QNetworkReply::finished, this, [this,i,reply](){grid->set_pos(i, i); set_imgs(i, reply);});
+        connect(reply, &QNetworkReply::finished, this, [this,i,reply,id](){grid->set_pos(i, i); set_imgs(i, reply, *id);});
         connect(nam_img, &QNetworkAccessManager::finished, this, [nam_img](){nam_img->deleteLater();});
         connect(reply, SIGNAL(finished()), this, SLOT(refresh()));
 
@@ -112,10 +126,10 @@ void Main_Window::refresh() {
     grid->update(grid->get_size_index(grid->get_size()));
 }
 
-void Main_Window::set_imgs(int index, QNetworkReply *reply) {
+void Main_Window::set_imgs(int index, QNetworkReply *reply, QString id) {
     QImageReader img_reader(reply);
     QImage img = img_reader.read();
-    grid->set_img(index, img);
+    grid->set_img(index, img, id);
 }
 
 void Main_Window::prev_button_released() {

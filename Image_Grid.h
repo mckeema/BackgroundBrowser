@@ -24,14 +24,15 @@ class Image_Grid : public QWidget {
         int get_size_index(int size_in);
         int get_page() const;
         bool on_last_page() const;
-        void set_img(int index, QString filename);
-        void set_img(int index, QImage img);
+        void set_img(int index, QString filename, QString id);
+        void set_img(int index, QImage img, QString id);
         void set_page(int page_in);
         void set_to_last_page();
         void set_pos(int index, int pos_in);
         void resize_imgs();
     public slots:
         void update(int value);
+        void save_images();
     signals:
         void done_updating();
     private:

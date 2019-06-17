@@ -69,12 +69,12 @@ bool Image_Grid::on_last_page() const {
     return page == last_page;
 }
 
-void Image_Grid::set_img(int index, QString filename) {
-    imgs[index]->set_img(filename);
+void Image_Grid::set_img(int index, QString filename, QString id) {
+    imgs[index]->set_img(filename, id);
 }
 
-void Image_Grid::set_img(int index, QImage img) {
-    imgs[index]->set_img(img);
+void Image_Grid::set_img(int index, QImage img, QString id) {
+    imgs[index]->set_img(img, id);
 }
 
 void Image_Grid::set_page(int page_in) {
@@ -146,6 +146,13 @@ void Image_Grid::update(int value) {
     }
 
     emit done_updating();
+}
+
+void Image_Grid::save_images() {
+    #pragma omp parallel for
+    for (int i = 0; i < imgs.size(); ++i) {
+        if (imgs[i]->is_selected()) imgs[i]->save_image();
+    }
 }
 
 void Image_Grid::sort() {
