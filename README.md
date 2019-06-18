@@ -19,17 +19,17 @@ Put link here
 Clone or download the repository from this page, then enter the main directory and execute
 the following:
 
-'''
+```bash
 qmake .
 make
-'''
+```
 
 If you wish to create an AppDir for AppImage creation, also create a folder named
 "AppDir" and execute:
 
-'''
+```bash
 make install INSTALL_ROOT=AppDir
-'''
+```
 
 ## About Qt
 
