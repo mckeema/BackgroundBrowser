@@ -1,3 +1,22 @@
+/*
+Copyright 2019 Matt M.
+
+This file is part of BackgroundBrowser.
+
+BackgroundBrowser is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+BackgroundBrowser is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "Main_Window.h"
 
 #include <QtNetwork>
@@ -50,6 +69,11 @@ Main_Window::Main_Window(QWidget *parent)
     QMenu *edit_menu = menubar->addMenu(tr("Edit"));
     QAction *settings_button = edit_menu->addAction(tr("Settings"));
     connect(settings_button, SIGNAL(triggered()), this, SLOT(open_settings_window()));
+
+    QMenu *help_menu = menubar->addMenu(tr("Help"));
+    QAction *about_button = help_menu->addAction(tr("About"));
+    QAction *about_qt_button = help_menu->addAction(tr("About Qt"));
+    connect(about_qt_button, &QAction::triggered, this, &QApplication::aboutQt);
 
     main_layout = new QGridLayout(this);
     main_layout->setMenuBar(menubar);

@@ -1,3 +1,22 @@
+/*
+Copyright 2019 Matt M.
+
+This file is part of BackgroundBrowser.
+
+BackgroundBrowser is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+BackgroundBrowser is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include "Image_Label.h"
 
 #include <QCheckBox>
@@ -14,26 +33,6 @@ Image_Label::Image_Label(QWidget *parent)
 
     setScaledContents(false);
     setMinimumSize(1, 1);
-
-    //orig_pixmap = QPixmap(filename);
-
-    //setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
-}
-
-Image_Label::Image_Label(QImage *img, QWidget *parent)
-    : QLabel(parent) {
-    pos = 0;
-    selected = false;
-    id = "placeholder";
-
-    check = new QCheckBox(this);
-
-    setScaledContents(false);
-    setMinimumSize(1, 1);
-
-    orig_pixmap.convertFromImage(*img);
-
-    setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void Image_Label::set_img(QString filename, QString id_in) {
