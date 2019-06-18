@@ -30,7 +30,7 @@ Main_Window::Main_Window(QWidget *parent)
     col_list = {2, 3, 4};
     size_list = {6, 12, 24};
 
-    grid = new Image_Grid(row_list, col_list, size_list, QString("placeholder.jpg"), this);
+    grid = new Image_Grid(row_list, col_list, size_list, QString(QApplication::applicationDirPath() + "/placeholder.jpg"), this);
     slider = new Grid_Slider(size_list, this);
     controller = new Page_Controller(this);
     controls = new Control_Panel(this);
