@@ -46,7 +46,6 @@ class Main_Window : public QWidget {
         Image_Grid *grid;
         Grid_Slider *slider;
         Page_Controller *controller;
-        //Settings_Window *settings_window;
         std::vector<int> row_list;
         std::vector<int> col_list;
         std::vector<int> size_list;

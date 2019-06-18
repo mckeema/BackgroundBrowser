@@ -4,7 +4,7 @@
 #include <QDir>
 #include <QLabel>
 
-Image_Label::Image_Label(QString filename, QWidget *parent)
+Image_Label::Image_Label(QWidget *parent)
     : QLabel(parent) {
     pos = 0;
     selected = false;
@@ -15,9 +15,9 @@ Image_Label::Image_Label(QString filename, QWidget *parent)
     setScaledContents(false);
     setMinimumSize(1, 1);
 
-    orig_pixmap = QPixmap(filename);
+    //orig_pixmap = QPixmap(filename);
 
-    setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    //setPixmap(orig_pixmap.scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 Image_Label::Image_Label(QImage *img, QWidget *parent)

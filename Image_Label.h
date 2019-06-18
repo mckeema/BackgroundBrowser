@@ -15,7 +15,7 @@ class Image_Label : public QLabel {
     Q_OBJECT
 
     public:
-        Image_Label(QString filename, QWidget *parent);
+        Image_Label(QWidget *parent);
         Image_Label(QImage *img, QWidget *parent);
 
         void set_img(QString filename, QString id_in);

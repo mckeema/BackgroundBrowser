@@ -20,7 +20,7 @@ Main_Window::Main_Window(QWidget *parent)
     settings = new QSettings(settings_filename, QSettings::IniFormat, this);
 
     if (!settings->contains("Download/save_dir")) {
-        settings->setValue("Download/save_dir", QApplication::applicationDirPath() + "/downloads/");
+        settings->setValue("Download/save_dir", QApplication::applicationDirPath());
     }
     if (!settings->contains("API/apikey")) {
         settings->setValue("API/apikey", "");
@@ -30,13 +30,12 @@ Main_Window::Main_Window(QWidget *parent)
     col_list = {2, 3, 4};
     size_list = {6, 12, 24};
 
-    grid = new Image_Grid(row_list, col_list, size_list, QString(QApplication::applicationDirPath() + "/placeholder.jpg"), this);
+    grid = new Image_Grid(row_list, col_list, size_list, this);
     slider = new Grid_Slider(size_list, this);
     controller = new Page_Controller(this);
     controls = new Control_Panel(this);
     save_button = new QPushButton(tr("Save Selected"), this);
     menubar = new QMenuBar(this);
-    //settings_window = new Settings_Window(settings, this);
 
     QMenu *file_menu = menubar->addMenu(tr("File"));
     QAction *exit_button = file_menu->addAction(tr("Exit"));
@@ -82,7 +81,6 @@ void Main_Window::on_button_released(QUrl url) {
     QNetworkRequest request;
     request.setUrl(url);
     if (settings->value("API/apikey").toString() != "") request.setUrl(QUrl(request.url().toString() + "&apikey=" + settings->value("API/apikey").toString()));
-    qDebug() << request.url();
     request.setRawHeader("User-Agent", "BackgroundBrowser");
     
     nam->get(request);

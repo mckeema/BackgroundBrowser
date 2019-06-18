@@ -15,7 +15,7 @@ class Image_Grid : public QWidget {
     Q_OBJECT
 
     public:
-        Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_in, std::vector<int> size_list_in, QString filename, QWidget *parent);
+        Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_in, std::vector<int> size_list_in, QWidget *parent);
         ~Image_Grid();
 
         int get_rows() const;
