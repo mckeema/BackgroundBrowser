@@ -267,6 +267,8 @@ void Control_Panel::construct_url() {
         url_str += "&colors=" + color_edit->text();
     }
 
+    if(page_edit->text() == "0") set_page(1);
+
     url_str += "&page=" + page_edit->text();
 
     emit url_ready(QUrl(url_str));

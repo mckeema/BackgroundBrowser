@@ -1,2 +1,4 @@
 .vscode/
+downloads/
 *.old
+settings.ini

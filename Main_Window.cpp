@@ -8,9 +8,24 @@
 #include "Image_Grid.h"
 #include "Image_Label.h"
 #include "Page_Controller.h"
+#include "Settings_Window.h"
 
 Main_Window::Main_Window(QWidget *parent)
     : QWidget(parent) {
+    QCoreApplication::setOrganizationName("Matt M");
+    QCoreApplication::setApplicationName("BackgroundBrowser");
+
+    settings_filename = QApplication::applicationDirPath() + "/settings.ini";
+
+    settings = new QSettings(settings_filename, QSettings::IniFormat, this);
+
+    if (!settings->contains("Download/save_dir")) {
+        settings->setValue("Download/save_dir", QApplication::applicationDirPath() + "/downloads/");
+    }
+    if (!settings->contains("API/apikey")) {
+        settings->setValue("API/apikey", "");
+    }
+
     row_list = {3, 4, 6};
     col_list = {2, 3, 4};
     size_list = {6, 12, 24};
@@ -21,6 +36,7 @@ Main_Window::Main_Window(QWidget *parent)
     controls = new Control_Panel(this);
     save_button = new QPushButton(tr("Save Selected"), this);
     menubar = new QMenuBar(this);
+    //settings_window = new Settings_Window(settings, this);
 
     QMenu *file_menu = menubar->addMenu(tr("File"));
     QAction *exit_button = file_menu->addAction(tr("Exit"));
@@ -28,6 +44,7 @@ Main_Window::Main_Window(QWidget *parent)
 
     QMenu *edit_menu = menubar->addMenu(tr("Edit"));
     QAction *settings_button = edit_menu->addAction(tr("Settings"));
+    connect(settings_button, SIGNAL(triggered()), this, SLOT(open_settings_window()));
 
     main_layout = new QGridLayout(this);
     main_layout->setMenuBar(menubar);
@@ -52,6 +69,9 @@ Main_Window::Main_Window(QWidget *parent)
     connect(controller, SIGNAL(prev_button_released()), this, SLOT(prev_button_released()));
     connect(controller, SIGNAL(next_button_released()), this, SLOT(next_button_released()));
     connect(save_button, SIGNAL(released()), grid, SLOT(save_images()));
+
+    resize(settings->value("Main_Window/size").toSize());
+    move(settings->value("Main_Window/pos").toPoint());
 }
 
 Main_Window::~Main_Window() {}
@@ -61,6 +81,8 @@ void Main_Window::on_button_released(QUrl url) {
 
     QNetworkRequest request;
     request.setUrl(url);
+    if (settings->value("API/apikey").toString() != "") request.setUrl(QUrl(request.url().toString() + "&apikey=" + settings->value("API/apikey").toString()));
+    qDebug() << request.url();
     request.setRawHeader("User-Agent", "BackgroundBrowser");
     
     nam->get(request);
@@ -145,6 +167,19 @@ void Main_Window::next_button_released() {
     }   
 }
 
+void Main_Window::open_settings_window() {
+    Settings_Window *settings_window = new Settings_Window(settings, geometry().center());
+
+    settings_window->show();
+}
+
 void Main_Window::resizeEvent(QResizeEvent *e) {
     grid->resize_imgs();
+}
+
+void Main_Window::closeEvent(QCloseEvent *e) {
+    settings->setValue("Main_Window/size", size());
+    settings->setValue("Main_Window/pos", pos());
+    
+    e->accept();
 }
