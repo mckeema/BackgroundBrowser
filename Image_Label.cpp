@@ -37,12 +37,12 @@ Image_Label::Image_Label(QWidget *parent)
 
 void Image_Label::set_img(QString filename, QString id_in) {
     orig_pixmap = QPixmap(filename);
-    id = id_in;
+    id = id_in.section("/", -1, -1);
 }
 
 void Image_Label::set_img(QImage img, QString id_in) {
     orig_pixmap.convertFromImage(img);
-    id = id_in;
+    id = id_in.section("/", -1, -1);
 }
 
 void Image_Label::resize() {
@@ -64,7 +64,7 @@ void Image_Label::set_pos(int value) {
 }
 
 void Image_Label::save_image() {
-    orig_pixmap.save(id + ".jpg", 0, 100);
+    orig_pixmap.save(id, 0, 100);
 
     selected = false;
     check->setChecked(selected);

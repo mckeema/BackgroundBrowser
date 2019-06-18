@@ -174,7 +174,7 @@ void Main_Window::parse_json(QNetworkReply *reply) {
         QNetworkAccessManager *nam_img = new QNetworkAccessManager(this);
 
         QNetworkReply *reply = nam_img->get(QNetworkRequest(v.toObject().value("path").toString()));
-        QString *id = new QString(v.toObject().value("id").toString());
+        QString *id = new QString(v.toObject().value("path").toString());
 
         connect(reply, &QNetworkReply::finished, this, [this,i,reply,id](){grid->set_pos(i, i); set_imgs(i, reply, *id);});
         connect(nam_img, &QNetworkAccessManager::finished, this, [nam_img](){nam_img->deleteLater();});
