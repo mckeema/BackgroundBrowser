@@ -3,13 +3,14 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = BackgroundBrowser
 INCLUDEPATH += .
 
 QT += widgets network
 
 QMAKE_CXXFLAGS += -fopenmp
 LIBS += -fopenmp
+
+CONFIG += release
 
 # The following define makes your compiler warn you if you use any
 # feature of Qt which has been marked as deprecated (the exact warnings
@@ -32,3 +33,23 @@ SOURCES += Control_Panel.cpp \
            Main_Window.cpp \
            Page_Controller.cpp \
            Settings_Window.cpp
+
+unix {
+    isEmpty(PREFIX) {
+        PREFIX = /usr
+    }
+
+    target.path = $$PREFIX/bin
+
+    shortcutfiles.files = BackgroundBrowser.desktop
+    shortcutfiles.path = $$PREFIX/share/applications/
+    data.files = backgroundbrowser.png
+    data.path = $$PREFIX/share/pixmaps/
+
+    INSTALLS += shortcutfiles
+    INSTALLS += data
+}
+
+INSTALLS += target
+
+DISTFILES += BackgroundBrowser.desktop

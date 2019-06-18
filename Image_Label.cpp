@@ -65,11 +65,19 @@ void Image_Label::set_pos(int value) {
 }
 
 void Image_Label::save_image() {
-    orig_pixmap.save("downloads/" + id + ".jpg", 0, 100);
+    orig_pixmap.save(id + ".jpg", 0, 100);
+
+    selected = false;
+    check->setChecked(selected);
 }
 
 bool Image_Label::is_selected() {
     return selected;
+}
+
+void Image_Label::deselect() {
+    selected = false;
+    check->setChecked(selected);
 }
 
 void Image_Label::mousePressEvent(QMouseEvent *event) {

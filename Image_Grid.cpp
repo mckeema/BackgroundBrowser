@@ -155,6 +155,13 @@ void Image_Grid::save_images() {
     }
 }
 
+void Image_Grid::deselect_images() {
+    #pragma omp parallel for
+    for (int i = 0; i < imgs.size(); ++i) {
+        imgs[i]->deselect();
+    }
+}
+
 void Image_Grid::sort() {
     std::sort(imgs.begin(), imgs.end(), less_than_image());
 

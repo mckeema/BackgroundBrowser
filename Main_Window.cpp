@@ -15,12 +15,18 @@ Main_Window::Main_Window(QWidget *parent)
     QCoreApplication::setOrganizationName("Matt M");
     QCoreApplication::setApplicationName("BackgroundBrowser");
 
-    settings_filename = QApplication::applicationDirPath() + "/settings.ini";
+    QString application_dir = QApplication::applicationDirPath();
+    if (qgetenv("APPIMAGE") != "") {
+        application_dir = qgetenv("APPIMAGE");
+        application_dir = application_dir.section("/", 0, -2);
+    }
+
+    settings_filename = application_dir + "/settings.ini";
 
     settings = new QSettings(settings_filename, QSettings::IniFormat, this);
 
     if (!settings->contains("Download/save_dir")) {
-        settings->setValue("Download/save_dir", QApplication::applicationDirPath());
+        settings->setValue("Download/save_dir", application_dir);
     }
     if (!settings->contains("API/apikey")) {
         settings->setValue("API/apikey", "");
@@ -67,6 +73,8 @@ Main_Window::Main_Window(QWidget *parent)
                                                              resize(size().width()-1, size().height()-1);});
     connect(controller, SIGNAL(prev_button_released()), this, SLOT(prev_button_released()));
     connect(controller, SIGNAL(next_button_released()), this, SLOT(next_button_released()));
+    connect(controller, &Page_Controller::prev_button_released, this, [this](){grid->deselect_images();});
+    connect(controller, &Page_Controller::next_button_released, this, [this](){grid->deselect_images();});
     connect(save_button, SIGNAL(released()), grid, SLOT(save_images()));
 
     resize(settings->value("Main_Window/size").toSize());

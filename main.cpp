@@ -4,6 +4,11 @@
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
+    if (qgetenv("APPIMAGE") != "") {
+        a.setWindowIcon(QIcon(QCoreApplication::applicationDirPath() + QString("/../share/pixmaps/backgroundbrowser.png")));
+    } else {
+        a.setWindowIcon(QIcon(QCoreApplication::applicationDirPath() + QString("/backgroundbrowser.png")));
+    }
 
     Main_Window w;
     w.show();

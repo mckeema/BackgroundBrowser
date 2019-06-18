@@ -33,6 +33,7 @@ class Image_Grid : public QWidget {
     public slots:
         void update(int value);
         void save_images();
+        void deselect_images();
     signals:
         void done_updating();
     private:

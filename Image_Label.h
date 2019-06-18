@@ -25,6 +25,7 @@ class Image_Label : public QLabel {
         void set_pos(int value);
         void save_image();
         bool is_selected();
+        void deselect();
     protected:
         void mousePressEvent(QMouseEvent *event);
     private:
