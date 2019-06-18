@@ -20,6 +20,7 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef SETTINGS_WINDOW_H
 #define SETTINGS_WINDOW_H
 
+#include <QDialog>
 #include <QPoint>
 #include <QWidget>
 
@@ -27,11 +28,11 @@ class QGridLayout;
 class QPoint;
 class QSettings;
 
-class Settings_Window : public QWidget {
+class Settings_Window : public QDialog {
     Q_OBJECT
 
     public:
-        Settings_Window(QSettings *settings_in, QPoint pos, QWidget *parent = 0);
+        Settings_Window(QSettings *settings_in, QWidget *parent = 0);
         ~Settings_Window();
     private slots:
         void set_save_location();

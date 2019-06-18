@@ -62,6 +62,33 @@ Main_Window::Main_Window(QWidget *parent)
     save_button = new QPushButton(tr("Save Selected"), this);
     menubar = new QMenuBar(this);
 
+    QDialog *about_dialog = new QDialog(this);
+    QGridLayout *about_layout = new QGridLayout(about_dialog);
+    about_dialog->setLayout(about_layout);
+    about_dialog->layout()->setSizeConstraint(QLayout::SetFixedSize);
+
+    about_dialog->setModal(true);
+    about_dialog->setWindowTitle("About BackgroundBrowser");
+
+    QDialogButtonBox *about_button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
+    connect(about_button_box, &QDialogButtonBox::accepted, about_dialog, &QDialog::accept);
+    QLabel *about_name_label = new QLabel(tr("BackgroundBrowser"), about_dialog);
+    about_name_label->setStyleSheet("font: bold 20px;");
+    QLabel *about_text_label = new QLabel("Copyright 2019 Matt M.\n\n"
+                                          "BackgroundBrowser is free software: you can redistribute it and/or modify\n"
+                                          "it under the terms of the GNU General Public License as published by\n"
+                                          "the Free Software Foundation, either version 3 of the License, or\n"
+                                          "(at your option) any later version.\n\n"
+                                          "BackgroundBrowser is distributed in the hope that it will be useful,\n"
+                                          "but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+                                          "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
+                                          "GNU General Public License for more details.\n\n"
+                                          "You should have received a copy of the GNU General Public License\n"
+                                          "along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.", about_dialog);
+    about_layout->addWidget(about_name_label, 0, 0);
+    about_layout->addWidget(about_text_label, 1, 0);
+    about_layout->addWidget(about_button_box, 2, 0);
+
     QMenu *file_menu = menubar->addMenu(tr("File"));
     QAction *exit_button = file_menu->addAction(tr("Exit"));
     connect(exit_button, &QAction::triggered, this, &QWidget::close);
@@ -73,6 +100,7 @@ Main_Window::Main_Window(QWidget *parent)
     QMenu *help_menu = menubar->addMenu(tr("Help"));
     QAction *about_button = help_menu->addAction(tr("About"));
     QAction *about_qt_button = help_menu->addAction(tr("About Qt"));
+    connect(about_button, &QAction::triggered, this, [about_dialog](){about_dialog->exec();});
     connect(about_qt_button, &QAction::triggered, this, &QApplication::aboutQt);
 
     main_layout = new QGridLayout(this);
@@ -174,6 +202,7 @@ void Main_Window::set_imgs(int index, QNetworkReply *reply, QString id) {
 void Main_Window::prev_button_released() {
     if (controls->get_page() > 1 && grid->get_page() == 1) {
         grid->set_to_last_page();
+        grid->set_sorted(false);
         controls->set_page(controls->get_page()-1);
 
         controls->construct_url();
@@ -187,6 +216,7 @@ void Main_Window::prev_button_released() {
 void Main_Window::next_button_released() {
     if (grid->on_last_page()) {
         grid->set_page(1);
+        grid->set_sorted(false);
         controls->set_page(controls->get_page()+1);
 
         controls->construct_url();
@@ -198,7 +228,7 @@ void Main_Window::next_button_released() {
 }
 
 void Main_Window::open_settings_window() {
-    Settings_Window *settings_window = new Settings_Window(settings, geometry().center());
+    Settings_Window *settings_window = new Settings_Window(settings, this);
 
     settings_window->show();
 }

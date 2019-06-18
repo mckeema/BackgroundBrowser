@@ -26,8 +26,8 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 #include <QPushButton>
 #include <QSettings>
 
-Settings_Window::Settings_Window(QSettings *settings_in, QPoint pos, QWidget *parent)
-    : QWidget(parent) {
+Settings_Window::Settings_Window(QSettings *settings_in, QWidget *parent)
+    : QDialog(parent) {
     settings = settings_in;
 
     layout = new QGridLayout(this);
@@ -57,6 +57,8 @@ Settings_Window::Settings_Window(QSettings *settings_in, QPoint pos, QWidget *pa
     layout->setColumnStretch(1, 1);
     layout->setColumnStretch(2, 0);
 
+    setModal(true);
+
     setLayout(layout);
     setWindowTitle(tr("Settings"));
 
@@ -72,8 +74,6 @@ Settings_Window::Settings_Window(QSettings *settings_in, QPoint pos, QWidget *pa
         settings->setValue("API/apikey", apikey_edit->text());
         close();
     });
-
-    move(pos - rect().center()/2);
 }
 
 Settings_Window::~Settings_Window() {}

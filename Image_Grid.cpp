@@ -115,6 +115,10 @@ void Image_Grid::resize_imgs() {
     }
 }
 
+void Image_Grid::set_sorted(bool sorted_in) {
+    sorted = sorted_in;
+}
+
 void Image_Grid::update(int value) {
     if (!sorted) sort();
 

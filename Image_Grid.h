@@ -49,6 +49,7 @@ class Image_Grid : public QWidget {
         void set_to_last_page();
         void set_pos(int index, int pos_in);
         void resize_imgs();
+        void set_sorted(bool sorted_in);
     public slots:
         void update(int value);
         void save_images();
