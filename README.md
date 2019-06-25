@@ -62,6 +62,9 @@ make
 
 The executable should appear in a new directory called "release".
 
+Thanks to [these instructions](mxe/usr/i686-w64-mingw32.static/qt5/bin), which I based mine
+off of.
+
 ## About Qt
 
 BackgroundBrowser was created using Qt 5.12.3. See more about Qt at [qt.io](https://qt.io).
