@@ -21,6 +21,7 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <QGridLayout>
 #include <QImage>
+#include <QSettings>
 #include <QString>
 
 #include <algorithm>
@@ -34,7 +35,7 @@ struct less_than_image {
     }
 };
 
-Image_Grid::Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_in, std::vector<int> size_list_in, QWidget *parent)
+Image_Grid::Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_in, std::vector<int> size_list_in, QSettings *settings, QWidget *parent)
     : QWidget(parent) {
     row_list = row_list_in;
     col_list = col_list_in;
@@ -46,7 +47,7 @@ Image_Grid::Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_i
     sorted = false;
 
     for (int i = 0; i < size_list.back(); ++i) {
-        Image_Label *img = new Image_Label(this);
+        Image_Label *img = new Image_Label(settings, this);
         connect(img, &Image_Label::similar_pressed, this, [this](QString query){emit similar_pressed(query);});
 
         img->setVisible(false);

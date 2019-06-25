@@ -28,14 +28,15 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 class QCheckBox;
 class QLabel;
 class QMouseEvent;
+class QSettings;
 class QWidget;
 
 class Image_Label : public QLabel {
     Q_OBJECT
 
     public:
-        Image_Label(QWidget *parent);
-        Image_Label(Image_Label *label, QWidget *parent);
+        Image_Label(QSettings *settings_in, QWidget *parent);
+        Image_Label(Image_Label *label, QSettings *settings_in, QWidget *parent);
 
         void set_img(QString filename, QString id_in);
         void set_img(QImage img, QString id_in);
@@ -57,6 +58,7 @@ class Image_Label : public QLabel {
         int pos;
         bool selected;
         QString id;
+        QSettings *settings;
 };
 
 #endif

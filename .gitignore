@@ -1,6 +1,11 @@
 .vscode/
 downloads/
 AppDir/
+release/
 *.old
 settings.ini
 backgroundbrowser.pdn
+*.zip
+*.o
+moc_*
+BackgroundBrowser

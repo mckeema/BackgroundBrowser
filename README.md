@@ -10,14 +10,16 @@ __Features__
 
 ## Download
 
-Put link here
+[Linux](https://www.dropbox.com/s/56t8kqx95saz0vd/BackgroundBrowser-linux-x86_64.zip?dl=1)
+
+[Windows](https://www.dropbox.com/s/8ddz6csmu8lq9sj/BackgroundBrowser-win-x86.zip?dl=1)
 
 ## Compilation
 
 ### Linux
 
-Clone or download the repository from this page, then enter the directory and execute
-the following:
+Clone or download the repository from this page, then enter the BackgroundBrowser
+directory and execute the following:
 
 ```bash
 qmake .
@@ -30,6 +32,35 @@ If you wish to create an AppDir for AppImage creation, also create a folder name
 ```bash
 make install INSTALL_ROOT=AppDir
 ```
+
+### Windows (on Linux using cross compiler)
+
+Download mxe:
+
+```bash
+git clone https://github.com/mxe/mxe.git
+```
+
+Enter the mxe directory and run:
+
+```bash
+make qt5
+```
+
+Add mxe to your path:
+
+```bash
+export PATH=\$PATH:[mxe directory]/usr/bin
+```
+
+Run mxe's qmake:
+
+```bash
+[mxe directory]/mxe/usr/i686-w64-mingw32.static/qt5/bin/qmake
+make
+```
+
+The executable should appear in a new directory called "release".
 
 ## About Qt
 

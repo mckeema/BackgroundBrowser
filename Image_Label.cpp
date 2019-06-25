@@ -22,14 +22,16 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 #include <QCheckBox>
 #include <QDir>
 #include <QLabel>
+#include <QSettings>
 
 #include "Image_Window.h"
 
-Image_Label::Image_Label(QWidget *parent)
+Image_Label::Image_Label(QSettings *settings_in, QWidget *parent)
     : QLabel(parent) {
     pos = 0;
     selected = false;
     id = "placeholder";
+    settings = settings_in;
 
     check = new QCheckBox(this);
 
@@ -37,8 +39,8 @@ Image_Label::Image_Label(QWidget *parent)
     setMinimumSize(1, 1);
 }
 
-Image_Label::Image_Label(Image_Label *label, QWidget *parent)
-    : Image_Label(parent) {
+Image_Label::Image_Label(Image_Label *label, QSettings *settings, QWidget *parent)
+    : Image_Label(settings, parent) {
     orig_pixmap = label->orig_pixmap;
     id = label->id;
 }
@@ -72,7 +74,7 @@ void Image_Label::set_pos(int value) {
 }
 
 void Image_Label::save_image() {
-    orig_pixmap.save(id, 0, 100);
+    orig_pixmap.save(settings->value("Download/save_dir").toString() + "/" + id, 0, 100);
 
     selected = false;
     check->setChecked(selected);
@@ -99,7 +101,7 @@ void Image_Label::mousePressEvent(QMouseEvent *event) {
 void Image_Label::mouseDoubleClickEvent(QMouseEvent *event) {
     deselect();
 
-    Image_Window *window = new Image_Window(new Image_Label(this, window), parentWidget()->parentWidget());
+    Image_Window *window = new Image_Window(new Image_Label(this, settings, window), parentWidget()->parentWidget());
     connect(window, &Image_Window::similar_pressed, this, [this](QString query){emit similar_pressed(query);});
     window->setWindowTitle(id.section(".", 0, 0).section("-", -1, -1));
 
