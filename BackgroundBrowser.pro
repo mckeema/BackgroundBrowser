@@ -24,11 +24,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += Control_Panel.h Grid_Slider.h Image_Grid.h Image_Label.h Main_Window.h Page_Controller.h Settings_Window.h
+HEADERS += Control_Panel.h Grid_Slider.h Image_Grid.h Image_Label.h Image_Window.h Main_Window.h Page_Controller.h Settings_Window.h
 SOURCES += Control_Panel.cpp \ 
            Grid_Slider.cpp \
            Image_Grid.cpp \
            Image_Label.cpp \
+           Image_Window.cpp \
            main.cpp \
            Main_Window.cpp \
            Page_Controller.cpp \

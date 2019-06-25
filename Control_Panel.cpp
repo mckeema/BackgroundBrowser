@@ -19,21 +19,36 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "Control_Panel.h"
 
+#include <QAbstractButton>
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QLineEdit>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QTimer>
 #include <QVBoxLayout>
 
 Control_Panel::Control_Panel(QWidget *parent)
     : QWidget(parent) {
     wh_page = 0;
 
+    timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this](){search_button->setStyleSheet("color:black;"); search_button->setText(tr("Search"));});
+
     layout = new QGridLayout(this);
 
     query_box = new QGroupBox(tr("Query"), this);
+    query_box->setToolTip(tr("Per Wallhaven Documentation:\n"
+    "-------------------------------\n"
+    "tagname - search fuzzily for a tag/keyword\n"
+    "-tagname - exclude a tag/keyword\n"
+    "+tag1 +tag2 - must have tag1 and tag2\n"
+    "+tag1 -tag2 - must have tag1 and NOT tag2\n"
+    "@username - user uploads\n"
+    "id:123 - Exact tag search (can not be combined)\n"
+    "type:{png/jpg} - Search for file type (jpg = jpeg)\n"
+    "like:wallpaper ID - Find wallpapers with similar tags"));
     query_edit = new QLineEdit(query_box);
     QVBoxLayout *query_layout = new QVBoxLayout(query_box);
     query_layout->addWidget(query_edit, 0);
@@ -45,8 +60,6 @@ Control_Panel::Control_Panel(QWidget *parent)
     QCheckBox *anime_check = new QCheckBox(tr("Anime"), category_box);
     QCheckBox *people_check = new QCheckBox(tr("People"), category_box);
     general_check->setChecked(true);
-    anime_check->setChecked(true);
-    people_check->setChecked(true);
     category_group = new QButtonGroup(category_box);
     category_group->setExclusive(false);
     category_group->addButton(general_check, 0);
@@ -105,6 +118,7 @@ Control_Panel::Control_Panel(QWidget *parent)
     sorting_layout->addWidget(favorites_button, 4);
     sorting_layout->addWidget(toplist_button, 5);
     sorting_box->setLayout(sorting_layout);
+    connect(sorting_group, SIGNAL(buttonClicked(QAbstractButton *)), this, SLOT(enable_topRange_box(QAbstractButton *)));
     layout->addWidget(sorting_box, 2, 0, 3, 1);
 
     order_box = new QGroupBox(tr("Order"), this);
@@ -123,6 +137,7 @@ Control_Panel::Control_Panel(QWidget *parent)
     layout->addWidget(order_box, 2, 1);
 
     topRange_box = new QGroupBox(tr("Top Range"), this);
+    topRange_box->setToolTip(tr("Range for \"toplist\" sorting method"));
     QRadioButton *one_day_button = new QRadioButton(tr("1d"), topRange_box);
     one_day_button->setObjectName("1d");
     QRadioButton *three_day_button = new QRadioButton(tr("3d"), topRange_box);
@@ -155,30 +170,46 @@ Control_Panel::Control_Panel(QWidget *parent)
     topRange_layout->addWidget(six_month_button, 5);
     topRange_layout->addWidget(one_year_button, 6);
     topRange_box->setLayout(topRange_layout);
+    topRange_box->setEnabled(false);
     layout->addWidget(topRange_box, 6, 0, 3, 1);
 
     atleast_box = new QGroupBox(tr("At Least"), this);
+    atleast_box->setToolTip(tr("Per Wallhaven Documentation:\n"
+    "-------------------------------\n"
+    "Minimum resolution allowed (e.g. 1920x1080)"));
     atleast_edit = new QLineEdit(atleast_box);
     QVBoxLayout *atleast_layout = new QVBoxLayout(atleast_box);
     atleast_layout->addWidget(atleast_edit, 0);
     atleast_box->setLayout(atleast_layout);
     layout->addWidget(atleast_box, 3, 1);
 
-    resolution_box = new QGroupBox(tr("Resolution"), this);
+    resolution_box = new QGroupBox(tr("Resolutions"), this);
+    resolution_box->setToolTip(tr("Per Wallhaven Documentation:\n"
+    "-------------------------------\n"
+    "Comma-separated list of exact wallpaper resolutions (e.g. 1920x1080,1920x1200)\n"
+    "Single resolution allowed"));
     resolution_edit = new QLineEdit(resolution_box);
     QVBoxLayout *resolution_layout = new QVBoxLayout(resolution_box);
     resolution_layout->addWidget(resolution_edit, 0);
     resolution_box->setLayout(resolution_layout);
     layout->addWidget(resolution_box, 4, 1);
 
-    ratio_box = new QGroupBox(tr("Ratio"), this);
+    ratio_box = new QGroupBox(tr("Ratios"), this);
+    ratio_box->setToolTip(tr("Per Wallhaven Documentation:\n"
+    "-------------------------------\n"
+    "Comma-separated list of aspect ratios (e.g. 16x9,16x10)\n"
+    "Single ratio allowed"));
     ratio_edit = new QLineEdit(ratio_box);
     QVBoxLayout *ratio_layout = new QVBoxLayout(ratio_box);
     ratio_layout->addWidget(ratio_edit, 0);
     ratio_box->setLayout(ratio_layout);
     layout->addWidget(ratio_box, 6, 1);
 
-    color_box = new QGroupBox(tr("Color"), this);
+    color_box = new QGroupBox(tr("Colors"), this);
+    color_box->setToolTip(tr("Per Wallhaven Documentation:\n"
+    "-------------------------------\n"
+    "Comma-separated list of colors in hex format (e.g. ff9900,ffffff)\n"
+    "Single color allowed"));
     color_edit = new QLineEdit(color_box);
     QVBoxLayout *color_layout = new QVBoxLayout(color_box);
     color_layout->addWidget(color_edit, 0);
@@ -196,6 +227,7 @@ Control_Panel::Control_Panel(QWidget *parent)
 
     search_button = new QPushButton(tr("Search"), this);
     connect(search_button, SIGNAL(released()), this, SLOT(construct_url()));
+    connect(search_button, SIGNAL(released()), this, SLOT(set_button_loading()));
     layout->addWidget(search_button, 9, 0, 1, 2);
 
     setLayout(layout);
@@ -212,9 +244,42 @@ void Control_Panel::set_page(int value) {
     page_edit->setText(QString::number(wh_page));
 }
 
+void Control_Panel::set_button_loading() {
+    search_button->setText(tr("Loading..."));
+}
+
+void Control_Panel::set_button_done() {
+    timer->stop();
+    search_button->setStyleSheet("color:green;");
+    search_button->setText(tr("Done!"));
+    timer->start(3000);
+}
+
+void Control_Panel::set_button_error() {
+    timer->stop();
+    search_button->setStyleSheet("color:red;");
+    search_button->setText(tr("ERROR: No images found"));
+    timer->start(3000);
+}
+
 void Control_Panel::set_page(QString value) {
     wh_page = value.toInt();
     page_edit->setText(QString::number(wh_page));
+}
+
+void Control_Panel::enable_nsfw_button(bool value) {
+    if (!value) purity_group->button(2)->setChecked(false);
+    purity_group->button(2)->setEnabled(value);
+}
+
+void Control_Panel::search(QString query) {
+    query_edit->setText(query);
+    set_page(1);
+    search_button->click();
+}
+
+void Control_Panel::enable_topRange_box(QAbstractButton *button) {
+    topRange_box->setEnabled(button == sorting_group->button(5));
 }
 
 void Control_Panel::construct_url() {
@@ -226,6 +291,9 @@ void Control_Panel::construct_url() {
     } else {
         url_str += "?categories=";
     }
+
+    if (category_group->checkedId() == -1) category_group->button(0)->setChecked(true);
+    if (purity_group->checkedId() == -1) purity_group->button(0)->setChecked(true);
 
     for (int i = 0; i < category_group->buttons().size(); ++i) {
         if (category_group->button(i)->isChecked()) {

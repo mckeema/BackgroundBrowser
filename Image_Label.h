@@ -35,6 +35,7 @@ class Image_Label : public QLabel {
 
     public:
         Image_Label(QWidget *parent);
+        Image_Label(Image_Label *label, QWidget *parent);
 
         void set_img(QString filename, QString id_in);
         void set_img(QImage img, QString id_in);
@@ -44,8 +45,12 @@ class Image_Label : public QLabel {
         void save_image();
         bool is_selected();
         void deselect();
+        QString get_id();
+    signals:
+        void similar_pressed(QString query);
     protected:
         void mousePressEvent(QMouseEvent *event);
+        void mouseDoubleClickEvent(QMouseEvent *event);
     private:
         QPixmap orig_pixmap;
         QCheckBox *check;

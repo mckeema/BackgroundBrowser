@@ -23,6 +23,8 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 #include <QDir>
 #include <QLabel>
 
+#include "Image_Window.h"
+
 Image_Label::Image_Label(QWidget *parent)
     : QLabel(parent) {
     pos = 0;
@@ -33,6 +35,12 @@ Image_Label::Image_Label(QWidget *parent)
 
     setScaledContents(false);
     setMinimumSize(1, 1);
+}
+
+Image_Label::Image_Label(Image_Label *label, QWidget *parent)
+    : Image_Label(parent) {
+    orig_pixmap = label->orig_pixmap;
+    id = label->id;
 }
 
 void Image_Label::set_img(QString filename, QString id_in) {
@@ -79,7 +87,22 @@ void Image_Label::deselect() {
     check->setChecked(selected);
 }
 
+QString Image_Label::get_id() {
+    return id;
+}
+
 void Image_Label::mousePressEvent(QMouseEvent *event) {
     selected = !selected;
     check->setChecked(selected);
+}
+
+void Image_Label::mouseDoubleClickEvent(QMouseEvent *event) {
+    deselect();
+
+    Image_Window *window = new Image_Window(new Image_Label(this, window), parentWidget()->parentWidget());
+    connect(window, &Image_Window::similar_pressed, this, [this](QString query){emit similar_pressed(query);});
+    window->setWindowTitle(id.section(".", 0, 0).section("-", -1, -1));
+
+    window->show();
+    window->resize_img();
 }

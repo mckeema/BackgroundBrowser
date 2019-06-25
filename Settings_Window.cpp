@@ -67,11 +67,13 @@ Settings_Window::Settings_Window(QSettings *settings_in, QWidget *parent)
     connect(apply_button, &QPushButton::released, this, [this,save_loc_edit,apikey_edit](){
         settings->setValue("Download/save_dir", save_loc_edit->text());
         settings->setValue("API/apikey", apikey_edit->text());
+        emit api_key_set(settings->value("API/apikey") != "");
     });
     connect(cancel_button, &QPushButton::released, this, &QWidget::close);
     connect(ok_button, &QPushButton::released, this, [this,save_loc_edit,apikey_edit](){
         settings->setValue("Download/save_dir", save_loc_edit->text());
         settings->setValue("API/apikey", apikey_edit->text());
+        emit api_key_set(settings->value("API/apikey") != "");
         close();
     });
 }

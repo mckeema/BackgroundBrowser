@@ -47,6 +47,7 @@ Image_Grid::Image_Grid(std::vector<int> row_list_in, std::vector<int> col_list_i
 
     for (int i = 0; i < size_list.back(); ++i) {
         Image_Label *img = new Image_Label(this);
+        connect(img, &Image_Label::similar_pressed, this, [this](QString query){emit similar_pressed(query);});
 
         img->setVisible(false);
 

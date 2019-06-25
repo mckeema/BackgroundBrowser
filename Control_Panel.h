@@ -20,14 +20,17 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 #ifndef CONTROL_PANEL_H
 #define CONTROL_PANEL_H
 
+#include <QString>
 #include <QUrl>
 #include <QWidget>
 
+class QAbstractButton;
 class QButtonGroup;
 class QGridLayout;
 class QGroupBox;
 class QLineEdit;
 class QPushButton;
+class QTimer;
 
 class Control_Panel : public QWidget{
     Q_OBJECT
@@ -38,9 +41,16 @@ class Control_Panel : public QWidget{
 
         int get_page() const;
         void set_page(int value);
+        void set_button_done();
+        void set_button_error();
     public slots:
         void construct_url();
         void set_page(QString value);
+        void enable_nsfw_button(bool value);
+        void search(QString query);
+        void set_button_loading();
+    private slots:
+        void enable_topRange_box(QAbstractButton *button);
     signals:
         void url_ready(QUrl url);
     private:
@@ -70,6 +80,7 @@ class Control_Panel : public QWidget{
         QPushButton *search_button;
         QUrl url;
         int wh_page;
+        QTimer *timer;
 };
 
 #endif

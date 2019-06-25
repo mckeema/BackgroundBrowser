@@ -17,31 +17,29 @@ You should have received a copy of the GNU General Public License
 along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#ifndef SETTINGS_WINDOW_H
-#define SETTINGS_WINDOW_H
+#ifndef IMAGE_WINDOW_H
+#define IMAGE_WINDOW_H
 
 #include <QDialog>
-#include <QPoint>
-#include <QWidget>
 
 class QGridLayout;
-class QPoint;
-class QSettings;
+class QWidget;
 
-class Settings_Window : public QDialog {
+class Image_Label;
+
+class Image_Window : public QDialog {
     Q_OBJECT
 
     public:
-        Settings_Window(QSettings *settings_in, QWidget *parent = 0);
-        ~Settings_Window();
-    private slots:
-        void set_save_location();
+        Image_Window(Image_Label *label, QWidget *parent);
+        ~Image_Window();
+
+        void resize_img();
     signals:
-        void save_loc_set(QString loc);
-        void api_key_set(bool value);
+        void similar_pressed(QString query);
     private:
-        QSettings *settings;
         QGridLayout *layout;
+        Image_Label *img;
 };
 
 #endif

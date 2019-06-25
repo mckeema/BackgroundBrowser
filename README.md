@@ -16,7 +16,7 @@ Put link here
 
 ### Linux
 
-Clone or download the repository from this page, then enter the main directory and execute
+Clone or download the repository from this page, then enter the directory and execute
 the following:
 
 ```bash

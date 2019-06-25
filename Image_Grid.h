@@ -56,6 +56,7 @@ class Image_Grid : public QWidget {
         void deselect_images();
     signals:
         void done_updating();
+        void similar_pressed(QString query);
     private:
         int rows;
         int cols;

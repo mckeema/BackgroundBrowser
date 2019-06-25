@@ -62,6 +62,8 @@ Main_Window::Main_Window(QWidget *parent)
     save_button = new QPushButton(tr("Save Selected"), this);
     menubar = new QMenuBar(this);
 
+    controls->enable_nsfw_button(settings->value("API/apikey") != "");
+
     QDialog *about_dialog = new QDialog(this);
     QGridLayout *about_layout = new QGridLayout(about_dialog);
     about_dialog->setLayout(about_layout);
@@ -123,6 +125,7 @@ Main_Window::Main_Window(QWidget *parent)
     connect(slider, SIGNAL(valueChanged(int)), grid, SLOT(update(int)));
     connect(grid, &Image_Grid::done_updating, this, [this](){resize(size().width()+1, size().height()+1);
                                                              resize(size().width()-1, size().height()-1);});
+    connect(grid, SIGNAL(similar_pressed(QString)), controls, SLOT(search(QString)));
     connect(controller, SIGNAL(prev_button_released()), this, SLOT(prev_button_released()));
     connect(controller, SIGNAL(next_button_released()), this, SLOT(next_button_released()));
     connect(controller, &Page_Controller::prev_button_released, this, [this](){grid->deselect_images();});
@@ -168,6 +171,10 @@ void Main_Window::parse_json(QNetworkReply *reply) {
 
     QJsonObject reply_obj = reply_doc.object();
     QJsonArray wh_data = reply_obj.value("data").toArray();
+    if (wh_data.isEmpty()) {
+        controls->set_button_error();
+        return;
+    }
 
     int i = 0;
     for (const QJsonValue &v : wh_data) {
@@ -190,7 +197,11 @@ void Main_Window::refresh() {
     if (i < size_list.back()) return;
     i = 0;
 
+    //grid->set_page(1);
+
     grid->update(grid->get_size_index(grid->get_size()));
+
+    controls->set_button_done();
 }
 
 void Main_Window::set_imgs(int index, QNetworkReply *reply, QString id) {
@@ -206,6 +217,7 @@ void Main_Window::prev_button_released() {
         controls->set_page(controls->get_page()-1);
 
         controls->construct_url();
+        controls->set_button_loading();
     } else if (grid->get_page() != 1) {
         grid->set_page(grid->get_page()-1);
 
@@ -220,6 +232,7 @@ void Main_Window::next_button_released() {
         controls->set_page(controls->get_page()+1);
 
         controls->construct_url();
+        controls->set_button_loading();
     } else {
         grid->set_page(grid->get_page()+1);
 
@@ -229,6 +242,8 @@ void Main_Window::next_button_released() {
 
 void Main_Window::open_settings_window() {
     Settings_Window *settings_window = new Settings_Window(settings, this);
+    
+    connect(settings_window, SIGNAL(api_key_set(bool)), controls, SLOT(enable_nsfw_button(bool)));
 
     settings_window->show();
 }
