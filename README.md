@@ -62,8 +62,9 @@ make
 
 The executable should appear in a new directory called "release".
 
-Thanks to [these instructions](https://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target),
-which I based mine off of.
+Thanks to [this Stack Overflow user](https://stackoverflow.com/users/321731/tshepang) for 
+[these instructions](https://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target),
+which I based the above on.
 
 ## About Qt
 
