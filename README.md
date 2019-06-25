@@ -56,7 +56,7 @@ export PATH=\$PATH:<mxe directory>/usr/bin
 Run mxe's qmake:
 
 ```bash
-<mxe directory>/mxe/usr/i686-w64-mingw32.static/qt5/bin/qmake
+<mxe directory>/usr/i686-w64-mingw32.static/qt5/bin/qmake
 make
 ```
 
