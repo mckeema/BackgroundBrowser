@@ -47,7 +47,7 @@ Enter the mxe directory and run:
 make qt5
 ```
 
-Add mxe to your path:
+Enter the BackgroundBrowser directory and add mxe to your path:
 
 ```bash
 export PATH=\$PATH:[mxe directory]/usr/bin
@@ -62,8 +62,8 @@ make
 
 The executable should appear in a new directory called "release".
 
-Thanks to [these instructions](mxe/usr/i686-w64-mingw32.static/qt5/bin), which I based mine
-off of.
+Thanks to [these instructions](https://stackoverflow.com/questions/10934683/how-do-i-configure-qt-for-cross-compilation-from-linux-to-windows-target),
+which I based mine off of.
 
 ## About Qt
 
