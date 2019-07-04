@@ -43,6 +43,8 @@ Image_Label::Image_Label(Image_Label *label, QSettings *settings, QWidget *paren
     : Image_Label(settings, parent) {
     orig_pixmap = label->orig_pixmap;
     id = label->id;
+    check->setEnabled(false);
+    check->setVisible(false);
 }
 
 void Image_Label::set_img(QString filename, QString id_in) {

@@ -10,9 +10,9 @@ __Features__
 
 ## Download
 
-[Linux](https://www.dropbox.com/s/56t8kqx95saz0vd/BackgroundBrowser-linux-x86_64.zip?dl=1)
+[Linux](https://www.dropbox.com/s/5j4021bq3hrsl2v/BackgroundBrowser-linux-x86_64.zip?dl=1)
 
-[Windows](https://www.dropbox.com/s/8ddz6csmu8lq9sj/BackgroundBrowser-win-x86.zip?dl=1)
+[Windows](https://www.dropbox.com/s/qxky6dp7dida1di/BackgroundBrowser-win-x86.zip?dl=1)
 
 ## Compilation
 
