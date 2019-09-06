@@ -8,6 +8,12 @@ __Features__
 * Save to user-specified download folder
 * Input your Wallhaven API key
 
+## Screenshots
+
+![Main Window](https://i.imgur.com/ZtbcaqP.png)
+![Settings](https://i.imgur.com/JGIyM2t.png)
+![Image Window](https://i.imgur.com/buBlTN6.png)
+
 ## Download
 
 [Linux](http://bit.ly/BBlinux8664)
