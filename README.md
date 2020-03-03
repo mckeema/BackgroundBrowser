@@ -16,9 +16,9 @@ __Features__
 
 ## Download
 
-[Linux](http://bit.ly/BBlinux8664)
+[Linux](http://bit.ly/BB11linux8664)
 
-[Windows](http://bit.ly/BBwin86)
+[Windows](http://bit.ly/BB11win86)
 
 ## Compilation
 

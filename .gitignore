@@ -9,3 +9,4 @@ backgroundbrowser.pdn
 *.o
 moc_*
 BackgroundBrowser
+zip/
