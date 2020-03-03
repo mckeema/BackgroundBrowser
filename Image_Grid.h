@@ -51,6 +51,7 @@ class Image_Grid : public QWidget {
         void set_pos(int index, int pos_in);
         void resize_imgs();
         void set_sorted(bool sorted_in);
+        Image_Label * get_img(int index);
     public slots:
         void update(int value);
         void save_images();

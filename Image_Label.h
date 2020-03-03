@@ -30,16 +30,23 @@ class QLabel;
 class QMouseEvent;
 class QSettings;
 class QWidget;
+class QNetworkReply;
+
+enum Fullsize_Origin : char {
+    Save, Window
+};
 
 class Image_Label : public QLabel {
     Q_OBJECT
 
     public:
         Image_Label(QSettings *settings_in, QWidget *parent);
-        Image_Label(Image_Label *label, QSettings *settings_in, QWidget *parent);
+        Image_Label(Image_Label *label, QSettings *settings_in, QWidget *parent, bool full = false);
 
         void set_img(QString filename, QString id_in);
         void set_img(QImage img, QString id_in);
+        void set_fullsize(QNetworkReply *reply, Fullsize_Origin origin);
+        void get_fullsize(Fullsize_Origin origin);
         void resize();
         int get_pos() const;
         void set_pos(int value);
@@ -47,17 +54,25 @@ class Image_Label : public QLabel {
         bool is_selected();
         void deselect();
         QString get_id();
+        
     signals:
         void similar_pressed(QString query);
+        void finished_save();
+        void finished_window();
+    public slots:
+        void create_window();
+        void image_save_helper();
     protected:
         void mousePressEvent(QMouseEvent *event);
         void mouseDoubleClickEvent(QMouseEvent *event);
     private:
         QPixmap orig_pixmap;
+        QPixmap fullsize;
         QCheckBox *check;
         int pos;
         bool selected;
         QString id;
+        QString url;
         QSettings *settings;
 };
 

@@ -174,7 +174,6 @@ void Image_Grid::update(int value) {
 }
 
 void Image_Grid::save_images() {
-    #pragma omp parallel for
     for (int i = 0; i < imgs.size(); ++i) {
         if (imgs[i]->is_selected()) imgs[i]->save_image();
     }
@@ -191,4 +190,8 @@ void Image_Grid::sort() {
     std::sort(imgs.begin(), imgs.end(), less_than_image());
 
     sorted = true;
+}
+
+Image_Label * Image_Grid::get_img(int index) {
+    return imgs[index];
 }

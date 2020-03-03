@@ -47,7 +47,7 @@ class Main_Window : public QWidget {
     private slots:
         void on_button_released(QUrl url);
         void parse_json(QNetworkReply *reply);
-        void refresh();
+        void refresh(QNetworkReply *reply);
         void set_imgs(int index, QNetworkReply *reply, QString id);
         void prev_button_released();
         void next_button_released();

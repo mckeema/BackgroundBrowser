@@ -180,19 +180,20 @@ void Main_Window::parse_json(QNetworkReply *reply) {
     for (const QJsonValue &v : wh_data) {
         QNetworkAccessManager *nam_img = new QNetworkAccessManager(this);
 
-        QNetworkReply *reply = nam_img->get(QNetworkRequest(v.toObject().value("path").toString()));
+        QNetworkReply *reply = nam_img->get(QNetworkRequest(v.toObject().value("thumbs").toObject().value("original").toString()));
         QString *id = new QString(v.toObject().value("path").toString());
 
-        connect(reply, &QNetworkReply::finished, this, [this,i,reply,id](){grid->set_pos(i, i); set_imgs(i, reply, *id);});
+        connect(nam_img, &QNetworkAccessManager::finished, this, [this,i,reply,id](){grid->set_pos(i, i); set_imgs(i, reply, *id);});
         connect(nam_img, &QNetworkAccessManager::finished, this, [nam_img](){nam_img->deleteLater();});
-        connect(reply, SIGNAL(finished()), this, SLOT(refresh()));
+        connect(nam_img, &QNetworkAccessManager::finished, this, &Main_Window::refresh);
 
         ++i;
     }
 }
 
-void Main_Window::refresh() {
+void Main_Window::refresh(QNetworkReply *reply) {
     static int i = 0;
+    if (reply->error() != QNetworkReply::NetworkError::NoError) return;
     ++i;
     if (i < size_list.back()) return;
     i = 0;
@@ -205,9 +206,23 @@ void Main_Window::refresh() {
 }
 
 void Main_Window::set_imgs(int index, QNetworkReply *reply, QString id) {
-    QImageReader img_reader(reply);
-    QImage img = img_reader.read();
-    grid->set_img(index, img, id);
+    if (reply->error() == QNetworkReply::NetworkError::NoError) {
+        QImageReader img_reader(reply);
+        QImage img = img_reader.read();
+        grid->set_img(index, img, id);
+
+        QNetworkAccessManager *nam_img = new QNetworkAccessManager(this);
+
+        reply = nam_img->get(QNetworkRequest(id));
+    } else {
+        QNetworkAccessManager *nam_img = new QNetworkAccessManager(this);
+
+        reply = nam_img->get(QNetworkRequest(reply->url()));
+        
+        connect(nam_img, &QNetworkAccessManager::finished, this, [this,index,reply,id](){grid->set_pos(index, index); set_imgs(index, reply, id);});
+        connect(nam_img, &QNetworkAccessManager::finished, this, [nam_img](){nam_img->deleteLater();});
+        connect(nam_img, &QNetworkAccessManager::finished, this, &Main_Window::refresh);
+    }
 }
 
 void Main_Window::prev_button_released() {

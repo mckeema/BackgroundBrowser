@@ -21,8 +21,10 @@ along with BackgroundBrowser.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <QCheckBox>
 #include <QDir>
+#include <QImageReader>
 #include <QLabel>
 #include <QSettings>
+#include <QtNetwork>
 
 #include "Image_Window.h"
 
@@ -31,30 +33,69 @@ Image_Label::Image_Label(QSettings *settings_in, QWidget *parent)
     pos = 0;
     selected = false;
     id = "placeholder";
+    url = "placeholder";
     settings = settings_in;
 
     check = new QCheckBox(this);
 
     setScaledContents(false);
     setMinimumSize(1, 1);
+
+    connect(this, &Image_Label::finished_save, this, &Image_Label::image_save_helper);
+    connect(this, &Image_Label::finished_window, this, &Image_Label::create_window);
 }
 
-Image_Label::Image_Label(Image_Label *label, QSettings *settings, QWidget *parent)
+Image_Label::Image_Label(Image_Label *label, QSettings *settings, QWidget *parent, bool full)
     : Image_Label(settings, parent) {
-    orig_pixmap = label->orig_pixmap;
+    if (!full) {
+        orig_pixmap = label->orig_pixmap;
+    } else {
+        orig_pixmap = label->fullsize;
+    }
+    fullsize = label->fullsize;
     id = label->id;
+    url = label->url;
     check->setEnabled(false);
     check->setVisible(false);
 }
 
 void Image_Label::set_img(QString filename, QString id_in) {
     orig_pixmap = QPixmap(filename);
+    url = id_in;
     id = id_in.section("/", -1, -1);
+    fullsize.load("");
 }
 
 void Image_Label::set_img(QImage img, QString id_in) {
     orig_pixmap.convertFromImage(img);
+    url = id_in;
     id = id_in.section("/", -1, -1);
+    fullsize.load("");
+}
+
+void Image_Label::set_fullsize(QNetworkReply *reply, Fullsize_Origin origin) {
+    if (reply->error() == QNetworkReply::NetworkError::NoError) {
+        QImageReader img_reader(reply);
+        QImage img = img_reader.read();
+        fullsize.convertFromImage(img);
+
+        if (origin == Fullsize_Origin::Save) {
+            emit finished_save();
+        } else {
+            emit finished_window();
+        }
+    } else {
+        get_fullsize(origin);
+    }
+}
+
+void Image_Label::get_fullsize(Fullsize_Origin origin) {
+    QNetworkAccessManager *nam_img = new QNetworkAccessManager(this);
+
+    QNetworkReply *reply = nam_img->get(QNetworkRequest(url));
+
+    connect(nam_img, &QNetworkAccessManager::finished, this, [this,reply,origin](){set_fullsize(reply, origin);});
+    connect(nam_img, &QNetworkAccessManager::finished, this, [nam_img](){nam_img->deleteLater();});
 }
 
 void Image_Label::resize() {
@@ -76,7 +117,15 @@ void Image_Label::set_pos(int value) {
 }
 
 void Image_Label::save_image() {
-    orig_pixmap.save(settings->value("Download/save_dir").toString() + "/" + id, 0, 100);
+    if (fullsize.isNull()) {
+        get_fullsize(Fullsize_Origin::Save);
+    } else {
+        image_save_helper();
+    }
+}
+
+void Image_Label::image_save_helper() {
+    fullsize.save(settings->value("Download/save_dir").toString() + "/" + id, 0, 100);
 
     selected = false;
     check->setChecked(selected);
@@ -103,7 +152,15 @@ void Image_Label::mousePressEvent(QMouseEvent *event) {
 void Image_Label::mouseDoubleClickEvent(QMouseEvent *event) {
     deselect();
 
-    Image_Window *window = new Image_Window(new Image_Label(this, settings, window), parentWidget()->parentWidget());
+    if (fullsize.isNull()) {
+        get_fullsize(Fullsize_Origin::Window);
+    } else {
+        create_window();
+    }
+}
+
+void Image_Label::create_window() {
+    Image_Window *window = new Image_Window(new Image_Label(this, settings, window, true), parentWidget()->parentWidget());
     connect(window, &Image_Window::similar_pressed, this, [this](QString query){emit similar_pressed(query);});
     window->setWindowTitle(id.section(".", 0, 0).section("-", -1, -1));
 
